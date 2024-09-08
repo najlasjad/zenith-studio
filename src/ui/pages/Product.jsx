@@ -1,32 +1,35 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import Header from "../containers/Header";
 import Footer from "../containers/Footer";
 
-const Product = () => {
-    const [data, setData] = useState(null);
+function Product() {
+    const dispatch = useDispatch();
+    const productList = useSelector(state => state.productList);
+
+    const getMovie = () => {
+        fetch("https://api.themoviedb.org/3/discover/movie?api_key=f7eee9eb238841b3e2ab9f1809faeef8")
+        .then(res => res.json())
+        .then(json => dispatch({ type: 'SET_PRODUCT_LIST', payload: json.results }));
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://api.example.com/products'); // Replace with your API link
-                const result = await response.json();
-                setData(result);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchData();
+        getMovie();
     }, []);
 
-    return(
+    return (
         <div>
-            <Header></Header>
-            {/* Render fetched data here */}
-            {data && <div>{JSON.stringify(data)}</div>}
-            <Footer></Footer>
+            <Header />
+            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {productList.map((movie) => (
+                    <div style={{ margin: '10px' }} key={movie.id}>
+                        <img style={{ width: '150px', height: 'auto' }} src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                    </div>
+                ))}
+            </div>
+            <Footer />
         </div>
-    )
+    );
 }
 
 export default Product;
