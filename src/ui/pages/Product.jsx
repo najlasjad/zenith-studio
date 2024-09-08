@@ -9,8 +9,14 @@ function Product() {
 
     const getMovie = () => {
         fetch("https://api.themoviedb.org/3/discover/movie?api_key=f7eee9eb238841b3e2ab9f1809faeef8")
-        .then(res => res.json())
-        .then(json => dispatch({ type: 'SET_PRODUCT_LIST', payload: json.results }));
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(json => dispatch({ type: 'SET_PRODUCT_LIST', payload: json.results }))
+        .catch(error => console.error('Fetch error:', error));
     }
 
     useEffect(() => {
